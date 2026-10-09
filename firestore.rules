@@ -1,0 +1,52 @@
+rules_version = '2';
+
+/**
+ * EcoKit Firestore rules.
+ *
+ * The app reads and writes Firestore exclusively through the Firebase Admin SDK
+ * on the server, which bypasses these rules. They therefore exist to lock the
+ * database down against anyone using the public web API with the project's
+ * client config — which is, by design, visible in the browser bundle.
+ *
+ * Products, categories, posts and settings are world-readable so the data can
+ * safely be read client-side later. Nothing is client-writable. Enquiries and
+ * orders contain customer contact details and are not readable at all.
+ */
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    match /products/{slug} {
+      allow read: if true;
+      allow write: if false;      // server only (Admin SDK)
+    }
+
+    match /categories/{slug} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    match /posts/{slug} {
+      // Drafts are filtered server-side; treat anything here as public.
+      allow read: if true;
+      allow write: if false;
+    }
+
+    match /settings/{doc} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // Customer data — never exposed to the client, in either direction.
+    match /enquiries/{id} {
+      allow read, write: if false;
+    }
+    match /orders/{id} {
+      allow read, write: if false;
+    }
+
+    // Anything not matched above is denied.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

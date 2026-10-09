@@ -1,0 +1,24 @@
+rules_version = '2';
+
+/**
+ * EcoKit Storage rules.
+ *
+ * Uploads happen server-side through the Admin SDK (see uploadImage in
+ * src/app/admin/actions.ts), which bypasses these rules. Product and blog images
+ * are public so they can be served to visitors; no client may write.
+ */
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /products/{file=**} {
+      allow read: if true;
+      allow write: if false;
+    }
+    match /blog/{file=**} {
+      allow read: if true;
+      allow write: if false;
+    }
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}
