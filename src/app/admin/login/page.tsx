@@ -8,13 +8,15 @@ export const metadata: Metadata = { title: "Admin sign in", robots: { index: fal
 export const dynamic = "force-dynamic";
 
 export default async function AdminLoginPage() {
-  if (isFirebaseConfigured() && (await getAdminUser())) redirect("/admin");
+  const isConfigured = isFirebaseConfigured();
+  const user = await getAdminUser();
+  if (isConfigured && user) redirect("/admin");
   return (
     <main id="main" className="admin-login">
       <div className="admin-login__card">
         <h1>EcoKit admin</h1>
-        <p className="admin__hint" style={{ marginBottom: "var(--space-4)" }}>Sign in to manage products and posts.</p>
-        <AdminLoginForm configured={isFirebaseConfigured()} />
+        <p className="admin__hint" style={{ marginBottom: "var(--space-4)" }}>Sign in to view site analytics and manage enquiries.</p>
+        <AdminLoginForm configured={isConfigured} />
       </div>
     </main>
   );

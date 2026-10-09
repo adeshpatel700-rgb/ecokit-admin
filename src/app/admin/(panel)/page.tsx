@@ -11,20 +11,20 @@ export default async function AdminDashboard() {
     getProducts(), 
     getPosts({ includeDrafts: true }), 
     getEnquiries(5),
-    auth ? auth.listUsers() : Promise.resolve({ users: [] })
+    auth ? auth.listUsers().catch((e) => {
+      console.error("Auth listUsers failed:", e.message);
+      return { users: [], error: String(e.message) };
+    }) : Promise.resolve({ users: [] })
   ]);
   
-  const unpriced = products.filter((p) => !isPurchasable(p)).length;
-  const needPhotos = products.filter((p) => p.needsPhoto).length;
-  const drafts = posts.filter((p) => p.status === "draft").length;
   const userCount = usersResult.users.length;
+  const userLabel = (usersResult as any).error 
+    ? `Users (Error: ${(usersResult as any).error})`
+    : "Registered Users";
 
   const stats = [
-    { n: products.length, l: "Products", href: "/admin/products" },
-    { n: unpriced, l: "Awaiting a price", href: "/admin/products" },
-    { n: needPhotos, l: "Awaiting a photo", href: "/admin/products" },
-    { n: posts.length, l: `Blog posts${drafts ? ` (${drafts} draft)` : ""}`, href: "/admin/blog" },
-    { n: userCount, l: "Registered Users", href: "#" },
+    { n: enquiries.length, l: "Total Enquiries", href: "/admin/enquiries" },
+    { n: userCount, l: userLabel, href: "#" },
   ];
 
   return (
@@ -34,7 +34,6 @@ export default async function AdminDashboard() {
           <h1>Dashboard</h1>
           <p className="admin__hint">Everything you can change on the site.</p>
         </div>
-        <Link href="/admin/products/new" className="btn btn--primary btn--sm">Add a product</Link>
       </div>
 
       <div className="admin-grid" style={{ marginBottom: "var(--space-4)" }}>

@@ -5,11 +5,8 @@ import { usePathname, useRouter } from "next/navigation";
 import type { ReactNode } from "react";
 
 const LINKS = [
-  { href: "/admin", label: "Dashboard" },
-  { href: "/admin/products", label: "Products" },
-  { href: "/admin/blog", label: "Blog" },
+  { href: "/admin", label: "Overview" },
   { href: "/admin/enquiries", label: "Enquiries" },
-  { href: "/admin/settings", label: "Settings" },
 ];
 
 export default function AdminShell({ email, children }: { email: string; children: ReactNode }) {
